@@ -28,21 +28,24 @@ app.post("/api/shorturl", function (req, res) {
   console.log(req.body);
   if (!originalURL)
     return res.status(400).json({ error: "Missing parameter 'original_url'" });
-  dns.lookup(originalURL.replace("https://", ""), (err, address, family) => {
-    if (err) {
-      console.log(err);
-      return res.json({ error: "invalid url" });
+  dns.lookup(
+    originalURL.replace("https://", "").replace("http://", ""),
+    (err, address, family) => {
+      if (err) {
+        console.log(err);
+        return res.json({ error: "invalid url" });
+      }
+      const shortenedURL = urls.length;
+      urls.push({
+        originalURL: originalURL,
+        shortenedURL: shortenedURL,
+      });
+      return res.json({
+        original_url: originalURL,
+        short_url: shortenedURL,
+      });
     }
-    const shortenedURL = urls.length;
-    urls.push({
-      originalURL: originalURL,
-      shortenedURL: shortenedURL,
-    });
-    return res.json({
-      original_url: originalURL,
-      short_url: shortenedURL,
-    });
-  });
+  );
 });
 
 app.get("/api/shorturl/:id", function (req, res) {
