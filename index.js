@@ -52,7 +52,9 @@ app.get("/api/shorturl/:id", function (req, res) {
   const { id } = req.params;
   const url = urls[id];
   if (!url) return res.status(404).json({ error: "Not Found" });
-  return res.redirect("https://" + url.originalURL.replace("https://", ""));
+  return res.redirect(
+    "https://" + url.originalURL.replace("https://", "").replace("http://", "")
+  );
 });
 
 app.listen(port, function () {
