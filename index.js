@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const dns = require("dns");
 const cors = require("cors");
-const { urlencoded } = require("body-parser");
+const { urlencoded, json } = require("body-parser");
 const app = express();
 
 // Basic Configuration
