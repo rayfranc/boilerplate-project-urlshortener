@@ -26,27 +26,30 @@ app.get("/api/hello", function (req, res) {
 
 app.post("/api/shorturl", function (req, res) {
   const originalURL = req.body.url;
-  console.log(req.body);
-  if (!originalURL)
-    return res.status(400).json({ error: "Missing parameter 'original_url'" });
-  dns.lookup(
-    originalURL.replace("https://", "").replace("http://", ""),
-    (err, address, family) => {
-      if (err) {
-        console.log(err);
-        return res.json({ error: "invalid url" });
-      }
-      const shortenedURL = urls.length;
-      urls.push({
-        originalURL: originalURL,
-        shortenedURL: shortenedURL,
-      });
-      return res.json({
-        original_url: originalURL,
-        short_url: shortenedURL,
-      });
-    }
+  if (originalURL === null || originalURL === "") {
+    return res.json({ error: "invalid url" });
+  }
+  domain = originalURL.match(
+    /^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/?\n]+)/gim
   );
+
+  param = domain[0].replace(/^https?:\/\//i, "");
+
+  dns.lookup(param, (err, address, family) => {
+    if (err) {
+      console.log(err);
+      return res.json({ error: "invalid url" });
+    }
+    const shortenedURL = urls.length;
+    urls.push({
+      originalURL: originalURL,
+      shortenedURL: shortenedURL,
+    });
+    return res.json({
+      original_url: originalURL,
+      short_url: shortenedURL,
+    });
+  });
 });
 
 app.get("/api/shorturl/:id", function (req, res) {
